@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ધોરણ ૮ - સમાનાર્થી અને વિરુદ્ધાર્થી ક્વિઝ</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f0f8ff; margin: 0; padding: 20px; }
+    .container { max-width: 700px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
+    h1 { text-align: center; color: #2c3e50; }
+    .question { font-size: 1.3em; margin: 20px 0; color: #34495e; }
+    .options button {
+      display: block; width: 100%; margin: 12px 0; padding: 15px; font-size: 1.1em;
+      border: 2px solid #3498db; background: #ecf0f1; border-radius: 8px; cursor: pointer;
+      transition: all 0.3s;
+    }
+    .options button:hover { background: #3498db; color: white; }
+    .options button.correct { background: #27ae60; color: white; border-color: #27ae60; }
+    .options button.wrong { background: #e74c3c; color: white; border-color: #e74c3c; }
+    .feedback { margin: 15px 0; font-size: 1.2em; font-weight: bold; text-align: center; }
+    .next-btn { padding: 12px 30px; font-size: 1.1em; background: #3498db; color: white; border: none; border-radius: 8px; cursor: pointer; }
+    .score { text-align: center; font-size: 1.5em; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>સમાનાર્થી અને વિરુદ્ધાર્થી ક્વિઝ</h1>
+    <div id="quiz">
+      <div class="question" id="question"></div>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="next-btn" id="next" style="display:none;">આગળનો પ્રશ્ન →</button>
+    </div>
+    <div class="score" id="score" style="display:none;"></div>
+  </div>
+
+  <script>
+    const questions = [
+      { q: "વાયરો નો સમાનાર્થી શું છે?", options: ["પવન", "વાતાવરણ", "વરસાદ", "આકાશ"], answer: 0 },
+      { q: "સુગંધ નો સમાનાર્થી છે?", options: ["વાસ", "ખુશબુ", "દુર્ગંધ", "મહેક"], answer: 1 },
+      { q: "મંજરી નો સમાનાર્થી છે?", options: ["ફૂલ", "કલી", "પાન", "ડાળ"], answer: 1 },
+      { q: "દરિયો નો સમાનાર્થી છે?", options: ["સમુદ્ર", "નદી", "તળાવ", "ઝરણું"], answer: 0 },
+      { q: "સુખ નો વિરુદ્ધાર્થી છે?", options: ["આનંદ", "દુ:ખ", "હર્ષ", "પ્રસન્નતા"], answer: 1 },
+      { q: "પ્રકાશ નો વિરુદ્ધાર્થી છે?", options: ["અંધારું", "ચમક", "સૂર્ય", "દીવો"], answer: 0 },
+      { q: "મિત્ર નો વિરુદ્ધાર્થી છે?", options: ["સાથી", "શત્રુ", "ભાઈ", "હિતેચ્છુ"], answer: 1 },
+      { q: "દિવસ નો વિરુદ્ધાર્થી છે?", options: ["રાત", "સવાર", "સાંજ", "પ્રભાત"], answer: 0 },
+      { q: "જીવન નો વિરુદ્ધાર્થી છે?", options: ["મૃત્યુ", "જન્મ", "આયુષ્ય", "ઉમર"], answer: 0 },
+      { q: "સત્ય નો વિરુદ્ધાર્થી છે?", options: ["ખોટું", "અસત્ય", "જૂઠ", "બધા"], answer: 3 }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    const qEl = document.getElementById('question');
+    const optEl = document.getElementById('options');
+    const fbEl = document.getElementById('feedback');
+    const nextBtn = document.getElementById('next');
+    const scoreEl = document.getElementById('score');
+
+    function loadQuestion() {
+      const q = questions[currentQuestion];
+      qEl.textContent = `${currentQuestion + 1}. ${q.q}`;
+      optEl.innerHTML = '';
+
+      q.options.forEach((option, index) => {
+        const btn = document.createElement('button');
+        btn.textContent = option;
+        btn.onclick = () => checkAnswer(index, btn);
+        optEl.appendChild(btn);
+      });
+
+      fbEl.innerHTML = '';
+      nextBtn.style.display = 'none';
+    }
+
+    function checkAnswer(selected, btn) {
+      const q = questions[currentQuestion];
+      const allBtns = optEl.getElementsByTagName('button');
+
+      // Disable all buttons
+      for (let b of allBtns) b.disabled = true;
+
+      if (selected === q.answer) {
+        btn.classList.add('correct');
+        fbEl.innerHTML = `<span style="color:green">✅ સાચું!</span>`;
+        score++;
+      } else {
+        btn.classList.add('wrong');
+        fbEl.innerHTML = `<span style="color:red">❌ ખોટું!</span><br>સાચો જવાબ: ${q.options[q.answer]}`;
+        // Highlight correct one
+        allBtns[q.answer].classList.add('correct');
+      }
+
+      nextBtn.style.display = 'block';
+    }
+
+    nextBtn.onclick = () => {
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+        loadQuestion();
+      } else {
+        showScore();
+      }
+    };
+
+    function showScore() {
+      document.getElementById('quiz').style.display = 'none';
+      scoreEl.style.display = 'block';
+      scoreEl.innerHTML = `
+        <h2>ક્વિઝ પૂરી થઈ!</h2>
+        <p>તમારો સ્કોર: <strong>${score} / ${questions.length}</strong></p>
+        <p>${score >= 8 ? 'બહુ સરસ! 🎉' : score >= 5 ? 'સારું પ્રયત્ન! 👍' : 'વધુ પ્રેક્ટિસ કરો 💪'}</p>
+        <button onclick="location.reload()" style="padding:12px 25px; font-size:1.1em;">ફરીથી ક્વિઝ આપો</button>
+      `;
+    }
+
+    // Start the quiz
+    loadQuestion();
+  </script>
+</body>
+</html>
