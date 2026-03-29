@@ -1,1 +1,1 @@
-# D-S-project-of-gujarati-
+(e.g., gujarati-quiz-std8)
